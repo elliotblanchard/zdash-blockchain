@@ -15,18 +15,20 @@ GEM
     coderay (1.1.3)
     colorize (0.8.1)
     concurrent-ruby (1.1.7)
+    cryptobank (0.1.3)
+      httparty (~> 0.15.6)
+      json (~> 2.1.0)
+    httparty (0.15.7)
+      multi_xml (>= 0.5.2)
     i18n (1.8.5)
       concurrent-ruby (~> 1.0)
+    json (2.1.0)
     method_source (1.0.0)
-    mime-types (1.25.1)
     minitest (5.14.2)
+    multi_xml (0.6.0)
     pry (0.13.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    ramontayag-bitcoin-client (0.1.0)
-      rest-client (~> 1.6.3)
-    rest-client (1.6.14)
-      mime-types (~> 1.16)
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
     zeitwerk (2.4.2)
@@ -37,8 +39,8 @@ PLATFORMS
 DEPENDENCIES
   activerecord
   colorize (~> 0.8.1)
+  cryptobank (~> 0.1.3)
   pry (~> 0.13.1)
-  ramontayag-bitcoin-client (~> 0.1.0)
 
 RUBY VERSION
    ruby 2.5.5p157
