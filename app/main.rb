@@ -40,9 +40,13 @@ puts client.getblockchaininfo
 =end
 
 #output = `curl -u samwellhouston:silversandyblocks silversandyblocks --data-binary '{"jsonrpc": "1.0", "id":"curltest", "method": "getinfo", "params": [] }' -H 'content-type: text/plain;' 192.168.1.158:8232/`
-output = `curl -u samwellhouston:silversandyblocks silversandyblocks --data-binary '{"jsonrpc": "1.0", "id":"curltest", "method": "getblock", "params": ["00000000febc373a1da2bd9f887b105ad79ddc26ac26c2b28652d64e5207c5b5"] }' -H 'content-type: text/plain;' 192.168.1.158:8232/`
-#output = `curl -u samwellhouston:silversandyblocks silversandyblocks --data-binary '{"jsonrpc": "1.0", "id":"curltest", "method": "getrawtransaction", "params": ["d1510ab0f419a44e8b807eff96fd8a4c0115a46071ab19133b5f1e8bd2263244"] }' -H 'content-type: text/plain;' 192.168.1.158:8232/`
+block_id = "00000000febc373a1da2bd9f887b105ad79ddc26ac26c2b28652d64e5207c5b5"
+output = `curl -u samwellhouston:silversandyblocks silversandyblocks --data-binary '{"jsonrpc": "1.0", "id":"curltest", "method": "getblock", "params": ["#{block_id}", 1] }' -H 'content-type: text/plain;' 192.168.1.158:8232/`
 parsed = JSON.parse(output)
-puts parsed
+tx_hash = parsed['result']['tx'][0]
+puts "Sample transaction via getblock: #{tx_hash}"
+output = `curl -u samwellhouston:silversandyblocks silversandyblocks --data-binary '{"jsonrpc": "1.0", "id":"curltest", "method": "getrawtransaction", "params": ["#{tx_hash}",1,"#{block_id}"] }' -H 'content-type: text/plain;' 192.168.1.158:8232/`
+parsed = JSON.parse(output)
+puts "Sample txid via getrawtransaction: #{parsed['result']['txid']}"
 
 #binding.pry
