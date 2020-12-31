@@ -56,7 +56,9 @@ zc_network = zc.getinfo
 final_block = zc_network["blocks"] - 100 # 100 most recent blocks may not be finalized
 
 # Main loop: get each block in Zcash blockchain
-(890..final_block).each do |i|
+# Stopped run from start at block 1145
+# Starting run to end at block 650000 (12/5/2019)
+(650000..final_block).each do |i|
   current_block = zc.getblock(i.to_s, 1)
   num_transactions = current_block['tx'].length - 1
   # Inner loop: get each transaction in this block
@@ -69,8 +71,8 @@ final_block = zc_network["blocks"] - 100 # 100 most recent blocks may not be fin
     rescue => e
       print "#{clear_line} For block #{i} / transaction #{j} transaction #{tx_hash} not found.".colorize(:red)
     end
-    if (i % 25).zero?
-      print "#{clear_line} Finished block #{i} of #{final_block} (#{(i.to_f / final_block).round(2)}%)" 
+    if (i % 10).zero?
+      print "#{clear_line} Finished block #{i} of #{final_block} (#{((i.to_f / final_block) * 100).round(2)}%)" 
     end
   end
 end
