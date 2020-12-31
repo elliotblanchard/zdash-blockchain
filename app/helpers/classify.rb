@@ -5,14 +5,16 @@ module Classify
       # d2ebc0cfd864027eb0887e1dcb772b4d1ca7bc016504889a6843583c2ca73bb4
       # f0d27409c193fef51b66a922794583f08c880ab220229c813995143e1cd244d5
       # c13632d045a685dfead48b62ceb8d0adb188fef9e3f902c65112a88a4dbed4fe
-  
+      
       if transaction
         if transaction.vin.length > 2
           parsed = transaction.vin.split(',')
-          if parsed[0].length > 18
+          #if parsed[0].length > 18 # this is wrong - you need to look for the string "coinbase"
+          if parsed[0].include? "coinbase"
             # vin arr contains coinbase field w/address
             # !!! check this carefully to see that it works
             if transaction.vout.length > 2
+              # print "#{transaction.zhash} is coinbase\n"
               'transparent_coinbase'
             else
               'shielded_coinbase'
@@ -48,7 +50,6 @@ module Classify
           end
         end
       else
-        print "Classify returned nil"
         return nil
       end
     end
