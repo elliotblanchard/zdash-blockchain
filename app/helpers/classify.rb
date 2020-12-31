@@ -48,6 +48,7 @@ module Classify
           end
         end
       else
+        print "Classify returned nil"
         return nil
       end
     end

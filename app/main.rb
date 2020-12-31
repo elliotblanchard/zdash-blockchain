@@ -8,6 +8,8 @@ require 'uri'
 require_relative './models/transaction'
 require_relative './helpers/classify'
 
+clear_line = "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b"
+
 def db_configuration
   db_configuration_file = File.join(File.expand_path('..', __FILE__), '..', 'db', 'config.yml')
   YAML.load(File.read(db_configuration_file))
@@ -42,7 +44,7 @@ def save_transaction(current_transaction, current_block, i)
 
   category = Classify.classify_transaction(t)
   t.destroy unless t.update(category: category) # Because duplicate zhash
-  print "#{current_transaction['txid']} not saved #{t.errors.messages}".colorize(:red) unless t.valid?
+  print "#{clear_line} #{current_transaction['txid']} not saved #{t.errors.messages}".colorize(:red) unless t.valid?
 
 end
 
@@ -54,7 +56,7 @@ zc_network = zc.getinfo
 final_block = zc_network["blocks"] - 100 # 100 most recent blocks may not be finalized
 
 # Main loop: get each block in Zcash blockchain
-(0..final_block).each do |i|
+(890..final_block).each do |i|
   current_block = zc.getblock(i.to_s, 1)
   num_transactions = current_block['tx'].length - 1
   # Inner loop: get each transaction in this block
@@ -63,10 +65,12 @@ final_block = zc_network["blocks"] - 100 # 100 most recent blocks may not be fin
     begin
       current_transaction = zc.getrawtransaction(tx_hash.to_s, 1)
       save_transaction(current_transaction, current_block, i)
-      print "For block #{i} / transaction #{j} transaction is: #{current_transaction}\n".colorize(:green)
+      #print "For block #{i} / transaction #{j} transaction is: #{current_transaction}\n".colorize(:green)
     rescue => e
-      print "For block #{i} / transaction #{j} transaction #{tx_hash} not found.\n".colorize(:red)
+      print "#{clear_line} For block #{i} / transaction #{j} transaction #{tx_hash} not found.".colorize(:red)
     end
-    binding.pry
+    if (i % 25).zero?
+      print "#{clear_line} Finished block #{i} of #{final_block} (#{(i.to_f / final_block).round(2)}%)" 
+    end
   end
 end
