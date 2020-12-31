@@ -21,7 +21,7 @@ default: &default
 
 development:
   <<: *default
-  database: zdash_blockchain_development
+  database: zdash_backend_development
 
   # The specified database role being used to connect to postgres.
   # To create additional roles in postgres see `$ createuser --help`.
@@ -55,7 +55,7 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: zdash_blockchain_test
+  database: zdash_backend_test
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -78,6 +78,6 @@ test:
 #
 production:
   <<: *default
-  database: zdash_blockchain_production
-  username: zdash_blockchain
-  password: <%= ENV['ZDASH_BLOCKCHAIN_DATABASE_PASSWORD'] %>
+  database: zdash_backend_production
+  username: zdash_backend
+  password: <%= ENV['ZDASH_BACKEND_DATABASE_PASSWORD'] %>
