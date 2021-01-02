@@ -58,7 +58,7 @@ final_block = zc_network["blocks"] - 100 # 100 most recent blocks may not be fin
 # Main loop: get each block in Zcash blockchain
 # Stopped run from start at block 1145
 # Starting run to end at block 650000 (12/5/2019)
-(650070..final_block).each do |i|
+(728460..final_block).each do |i|
   current_block = zc.getblock(i.to_s, 1)
   num_transactions = current_block['tx'].length - 1
   # Inner loop: get each transaction in this block
