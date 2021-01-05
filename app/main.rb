@@ -17,7 +17,7 @@ end
 
 def save_transaction(current_transaction, current_block, i)
 
-  t = Transaction.create(
+  t = Transaction.new(
     zhash: current_transaction['txid'],
     mainChain: nil,
     fee: nil,
@@ -42,8 +42,8 @@ def save_transaction(current_transaction, current_block, i)
     overwintered: nil
   )
 
-  category = Classify.classify_transaction(t)
-  t.destroy unless t.update(category: category) # Because duplicate zhash
+  t.category = Classify.classify_transaction(t)
+  t.destroy unless t.save # Because duplicate zhash
   print "#{clear_line} #{current_transaction['txid']} not saved #{t.errors.messages}".colorize(:red) unless t.valid?
 
 end
@@ -58,7 +58,8 @@ final_block = zc_network["blocks"] - 100 # 100 most recent blocks may not be fin
 # Main loop: get each block in Zcash blockchain
 # Stopped run from start at block 1145
 # Starting run to end at block 650000 (12/5/2019)
-(728460..final_block).each do |i|
+
+(754675..final_block).each do |i|
   current_block = zc.getblock(i.to_s, 1)
   num_transactions = current_block['tx'].length - 1
   # Inner loop: get each transaction in this block
