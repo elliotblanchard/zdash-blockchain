@@ -66,7 +66,7 @@ latest_transactions = []
       print "For block #{i} / transaction #{j} transaction #{tx_hash} not found.\n".colorize(:red)
     end
     if (i % 1000).zero?
-      Transaction.import latest_transactions
+      Transaction.import latest_transactions, validate_uniqueness: true
       print "Finished block #{i} of #{final_block} (#{((i.to_f / final_block) * 100).round(2)}%). Imported #{latest_transactions.length} transactions.\n"
       latest_transactions = []
     end
