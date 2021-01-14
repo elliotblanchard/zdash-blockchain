@@ -27,7 +27,7 @@ latest_transactions = []
 # Main loop: get each block in Zcash blockchain
 # Starting run to end at block 650000 (12/5/2019)
 
-(650000..final_block).each do |i|
+(882000..final_block).each do |i|
   current_block = zc.getblock(i.to_s, 1)
   num_transactions = current_block['tx'].length - 1
   # Inner loop: get each transaction in this block
@@ -60,15 +60,16 @@ latest_transactions = []
         overwintered: nil
       )
 
-      t.category = Classify.classify_transaction(t)  
+      t.category = Classify.classify_transaction(t)
       latest_transactions << t
 
     rescue => e
       print "For block #{i} / transaction #{j} transaction #{tx_hash} not found.\n".colorize(:red)
     end
     if (i % 1000).zero?
-      Transaction.import latest_transactions, validate_uniqueness: true
-      print "Finished block #{i} of #{final_block} (#{((i.to_f / final_block) * 100).round(2)}%). Imported #{latest_transactions.length} transactions.\n"
+      #Transaction.import latest_transactions, validate_uniqueness: true
+      Transaction.import latest_transactions
+      print "Finished block #{i} of #{final_block} (#{((i.to_f / final_block) * 100).round(2)}%) at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}}. Imported #{latest_transactions.length} transactions.\n"
       latest_transactions = []
     end
   end
