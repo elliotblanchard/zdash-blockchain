@@ -22,8 +22,6 @@ ActiveRecord::Base.establish_connection(db_configuration['development'])
 
 zc_network = zc.getinfo
 
-binding.pry
-
 final_block = zc_network["blocks"] - 100 # 100 most recent blocks may not be finalized
 latest_transactions = []
 
@@ -72,7 +70,6 @@ latest_transactions = []
     end
     if (i % 1000).zero?
       print "Importing blocks at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}.\n"
-      #Transaction.import latest_transactions, validate_uniqueness: true
       Transaction.import latest_transactions
       print "Finished block #{i} of #{final_block} (#{((i.to_f / final_block) * 100).round(2)}%) at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}. Imported #{latest_transactions.length} transactions."
       latest_transactions = []
