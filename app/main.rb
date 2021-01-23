@@ -21,13 +21,16 @@ zc = RPC::JSON::Client.new 'http://samwellhouston:silversandyblocks@192.168.1.15
 ActiveRecord::Base.establish_connection(db_configuration['development'])
 
 zc_network = zc.getinfo
+
+binding.pry
+
 final_block = zc_network["blocks"] - 100 # 100 most recent blocks may not be finalized
 latest_transactions = []
 
 # Main loop: get each block in Zcash blockchain
 # Starting run to end at block 650000 (12/5/2019)
 
-(882000..final_block).each do |i|
+(650000..final_block).each do |i|
   current_block = zc.getblock(i.to_s, 1)
   num_transactions = current_block['tx'].length - 1
   # Inner loop: get each transaction in this block
@@ -51,26 +54,33 @@ latest_transactions = []
         vin: current_transaction['vin'],
         vout: current_transaction['vout'],
         vjoinsplit: current_transaction['vjoinsplit'],
-        vShieldedOutput: nil,
-        vShieldedSpend: nil,
-        valueBalance: nil,
+        vShieldedOutput: current_transaction['vShieldedOutput'],
+        vShieldedSpend: current_transaction['vShieldedSpend'],
+        valueBalance: current_transaction['valueBalance'],
         value: nil,
         outputValue: nil,
         shieldedValue: nil,
-        overwintered: nil
+        overwintered: current_transaction['overwintered']
       )
 
       t.category = Classify.classify_transaction(t)
       latest_transactions << t
+      print "Adding transaction #{latest_transactions.length} to latest_transactions.\n"
 
     rescue => e
       print "For block #{i} / transaction #{j} transaction #{tx_hash} not found.\n".colorize(:red)
     end
     if (i % 1000).zero?
+      print "Importing blocks at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}.\n"
       #Transaction.import latest_transactions, validate_uniqueness: true
       Transaction.import latest_transactions
-      print "Finished block #{i} of #{final_block} (#{((i.to_f / final_block) * 100).round(2)}%) at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}}. Imported #{latest_transactions.length} transactions.\n"
+      print "Finished block #{i} of #{final_block} (#{((i.to_f / final_block) * 100).round(2)}%) at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}. Imported #{latest_transactions.length} transactions."
       latest_transactions = []
     end
   end
 end
+# Save final group of transacations in the array
+print "Importing blocks at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}.\n"
+Transaction.import latest_transactions
+#print "Finished block #{i} of #{final_block} (#{((i.to_f / final_block) * 100).round(2)}%) at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}. Imported #{latest_transactions.length} transactions.\n"
+latest_transactions = []

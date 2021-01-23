@@ -11,12 +11,13 @@ module Classify
           parsed = transaction.vin.split(',')
           if ( (parsed[0].length > 18) && (parsed[0].include? 'coinbase'))
             # vin arr contains coinbase field w/address
-            # !!! check this carefully to see that it works
-            if transaction.vout.length > 2
-              # print "#{transaction.zhash} is coinbase\n"
-              'transparent_coinbase'
-            else
+            # This next if / else is custom to the blockchain
+            # due to differences in way zcash-cli (blockchain)
+            # and zcha.in API (ongoing) report vShieldedOutput
+            if transaction.vShieldedOutput.length > 0
               'shielded_coinbase'
+            else
+              'transparent_coinbase'
             end
           else
             if transaction.vout.length > 2
