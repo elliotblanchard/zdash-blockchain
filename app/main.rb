@@ -28,7 +28,7 @@ latest_transactions = []
 # Main loop: get each block in Zcash blockchain
 # Starting run to end at block 650000 (12/5/2019)
 
-(650000..final_block).each do |i|
+(0..final_block).each do |i|
   current_block = zc.getblock(i.to_s, 1)
   num_transactions = current_block['tx'].length - 1
   # Inner loop: get each transaction in this block
@@ -63,7 +63,7 @@ latest_transactions = []
 
       t.category = Classify.classify_transaction(t)
       latest_transactions << t
-      print "Adding transaction #{latest_transactions.length} to latest_transactions.\n"
+      #print "Adding transaction #{latest_transactions.length} to latest_transactions.\n"
 
     rescue => e
       print "For block #{i} / transaction #{j} transaction #{tx_hash} not found.\n".colorize(:red)
