@@ -68,7 +68,7 @@ latest_transactions = []
     rescue => e
       print "For block #{i} / transaction #{j} transaction #{tx_hash} not found.\n".colorize(:red)
     end
-    if (i % 1000).zero?
+    if (i % 500).zero?
       print "Importing blocks at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}.\n"
       Transaction.import latest_transactions
       print "Finished block #{i} of #{final_block} (#{((i.to_f / final_block) * 100).round(2)}%) at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}. Imported #{latest_transactions.length} transactions."
