@@ -14,9 +14,11 @@ module Classify
             # This next if / else is custom to the blockchain
             # due to differences in way zcash-cli (blockchain)
             # and zcha.in API (ongoing) report vShieldedOutput
-            if transaction.vShieldedOutput.length > 2
-              print("Shielded coinbase: #{transaction.zhash}")
-              'shielded_coinbase'
+            if transaction.vShieldedOutput
+              if transaction.vShieldedOutput.length > 2
+                print("Shielded coinbase: #{transaction.zhash}")
+                'shielded_coinbase'
+              end
             else
               'transparent_coinbase'
             end

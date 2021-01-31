@@ -63,15 +63,15 @@ latest_transactions = []
 
       t.category = Classify.classify_transaction(t)
       latest_transactions << t
-      #print "Adding transaction #{latest_transactions.length} to latest_transactions.\n"
+      # print "Adding transaction #{latest_transactions.length} to latest_transactions.\n"
 
     rescue => e
-      print "For block #{i} / transaction #{j} transaction #{tx_hash} not found.\n".colorize(:red)
+      print "ERROR: #{e}.\n".colorize(:red)
     end
-    if (i % 500).zero?
-      print "Importing blocks at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}.\n"
+    if (latest_transactions.length % 3000).zero?
+      print "Importing transactions at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}.\n"
       Transaction.import latest_transactions
-      print "Finished block #{i} of #{final_block} (#{((i.to_f / final_block) * 100).round(2)}%) at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}. Imported #{latest_transactions.length} transactions."
+      print "Finished importing transactions. At block #{i} of #{final_block} (#{((i.to_f / final_block) * 100).round(2)}%) at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}. Imported #{latest_transactions.length} transactions."
       latest_transactions = []
     end
   end
