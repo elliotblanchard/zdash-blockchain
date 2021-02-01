@@ -42,7 +42,7 @@ module Classify
             end
           else
             if transaction.vjoinsplit.length > 2
-              if ( transaction.vShieldedOutput && (transaction.vShieldedOutput > 0.0) )
+              if ( transaction.vShieldedOutput && (transaction.vShieldedOutput.length > 2) )
                 'migration'
               else
                 'sprout_shielded'
