@@ -66,9 +66,10 @@ latest_transactions = []
       # print "Adding transaction #{latest_transactions.length} to latest_transactions.\n"
 
     rescue => e
+      binding.pry
       print "ERROR: #{e}.\n".colorize(:red)
     end
-    if (latest_transactions.length % 3000).zero?
+    if (latest_transactions.length % 4000).zero?
       print "Importing transactions at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}.\n"
       Transaction.import latest_transactions
       print "Finished importing transactions. At block #{i} of #{final_block} (#{((i.to_f / final_block) * 100).round(2)}%) at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}. Imported #{latest_transactions.length} transactions."
