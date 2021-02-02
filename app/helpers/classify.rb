@@ -18,6 +18,8 @@ module Classify
               if transaction.vShieldedOutput.length > 2
                 print("Shielded coinbase: #{transaction.zhash}")
                 'shielded_coinbase'
+              else
+                'transparent_coinbase'
               end
             else
               'transparent_coinbase'

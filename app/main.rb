@@ -62,8 +62,14 @@ latest_transactions = []
       )
 
       t.category = Classify.classify_transaction(t)
+      if t.category == nil
+        binding.pry
+      end
+      
       latest_transactions << t
-      # print "Adding transaction #{latest_transactions.length} to latest_transactions.\n"
+      if (latest_transactions.length % 1000).zero?
+        print "Adding transaction #{latest_transactions.length} to latest_transactions.\n"
+      end
 
     rescue => e
       binding.pry
