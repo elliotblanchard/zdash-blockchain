@@ -28,7 +28,7 @@ latest_transactions = []
 # Main loop: get each block in Zcash blockchain
 # Starting run to end at block 650000 (12/5/2019)
 
-(418766..final_block).each do |i|
+(650000..final_block).each do |i|
   current_block = zc.getblock(i.to_s, 1)
   num_transactions = current_block['tx'].length - 1
   # Inner loop: get each transaction in this block
@@ -72,7 +72,7 @@ latest_transactions = []
     if (latest_transactions.length % 4000).zero?
       print "Importing transactions at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}.\n"
       Transaction.import latest_transactions
-      print "Finished importing transactions. At block #{i} of #{final_block} (#{((i.to_f / final_block) * 100).round(2)}%) at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}. Imported #{latest_transactions.length} transactions."
+      print "Finished importing transactions. At block #{i} of #{final_block} (#{((i.to_f / final_block) * 100).round(2)}%) at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}. Imported #{latest_transactions.length} transactions.\n"
       latest_transactions = []
     end
   end
