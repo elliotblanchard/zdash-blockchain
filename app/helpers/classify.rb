@@ -47,9 +47,11 @@ module Classify
               if ( transaction.vShieldedOutput && (transaction.vShieldedOutput.length > 2) )
                 'migration'
               else
+                # Pool size detection goes here
                 'sprout_shielded'
               end
             else
+              # Pool size detection goes here
               'sapling_shielded'
             end
           end
