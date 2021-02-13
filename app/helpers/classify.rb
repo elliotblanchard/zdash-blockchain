@@ -1,5 +1,5 @@
 module Classify
-    def Classify.classify_transaction(transaction)
+    def Classify.classify_transaction(transaction, sapling, sapling_hidden, sapling_revealed, sprout, sprout_hidden, sprout_revealed)
       # Some example transaction hashes:
       # d456a889ddc87ad41e379de5bb245781333fd883b67bf34eebabd1a6fb7e144a
       # d2ebc0cfd864027eb0887e1dcb772b4d1ca7bc016504889a6843583c2ca73bb4
@@ -17,48 +17,73 @@ module Classify
             if transaction.vShieldedOutput
               if transaction.vShieldedOutput.length > 2
                 print("Shielded coinbase: #{transaction.zhash}")
-                'shielded_coinbase'
+                {category: 'shielded_coinbase', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
               else
-                'transparent_coinbase'
+                {category: 'transparent_coinbase', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
               end
             else
-              'transparent_coinbase'
+              {category: 'transparent_coinbase', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
             end
           else
             if transaction.vout.length > 2
-              'transparent'
+              {category: 'transparent', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
             else
               if transaction.vjoinsplit.length > 2
-                'sprout_shielding'
+                {category: 'sprout_shielding', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
               else
-                'sapling_shielding'
+                {category: 'sapling_shielding', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
               end
             end
           end
         else
           if transaction.vout.length > 2
             if transaction.vjoinsplit.length > 2
-              'sprout_deshielding'
+              {category: 'sprout_deshielding', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
             else
-              'sapling_deshielding'
+              {category: 'sapling_deshielding', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
             end
           else
             if transaction.vjoinsplit.length > 2
               if ( transaction.vShieldedOutput && (transaction.vShieldedOutput.length > 2) )
-                'migration'
+                {category: 'migration', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
               else
                 # Pool size detection goes here
-                'sprout_shielded'
+                # vpubold + vpubnew seem to both be inside vjoinsplit
+                # Python classification is:
+                # sprout += 1
+                # sprout_hidden += tx.sum_vpubold
+                # sprout_revealed += tx.sum_vpubnew
+                # sprout_balance = (sprout_hidden - sprout_revealed) / 100000000
+                fields = transaction.vjoinsplit.split(' ')
+                vpub_old = fields[0].split('=>')[1].gsub('"', '').gsub(',', '').to_f
+                vpub_new = fields[2].split('=>')[1].gsub('"', '').gsub(',', '').to_f
+                sprout += 1
+                sprout_hidden += vpub_old
+                sprout_revealed += vpub_new
+                { category: 'sprout_shielded', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed }
               end
             else
               # Pool size detection goes here
-              'sapling_shielded'
+              # Python classification is:
+              # sapling += 1
+              # if tx.value_balance < 0:
+              #  sapling_hidden += abs(tx.value_balance)
+              # else:
+              #  sapling_revealed += tx.value_balance
+              # sapling_balance = (sapling_hidden - sapling_revealed) / 100000000
+              sapling += 1
+              if transaction.valueBalance.negative?
+                sapling_hidden += transaction.valueBalance.to_f.abs
+              else
+                sapling_revealed += transaction.valueBalance.to_f
+              end
+              { category: 'sapling_shielded', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed } 
             end
           end
         end
       else
         binding.pry
-        return nil
+        return {category: nil, sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
       end
     end
   end

@@ -25,11 +25,19 @@ zc_network = zc.getinfo
 final_block = zc_network["blocks"] - 100 # 100 most recent blocks may not be finalized
 latest_transactions = []
 
+# Shielded pool counters
+sapling = 0
+sapling_hidden = 0
+sapling_revealed = 0
+sprout = 0
+sprout_hidden = 0
+sprout_revealed = 0
+
 # Main loop: get each block in Zcash blockchain
 # Starting run to end at block 650000 (12/5/2019)
 
-#(650000..final_block).each do |i|
-(0..649999).each do |i|
+#(0..final_block).each do |i|
+(0..50000).each do |i|
   current_block = zc.getblock(i.to_s, 1)
   num_transactions = current_block['tx'].length - 1
   # Inner loop: get each transaction in this block
@@ -62,11 +70,16 @@ latest_transactions = []
         overwintered: current_transaction['overwintered']
       )
 
-      t.category = Classify.classify_transaction(t)
-      if t.category == nil
-        binding.pry
-      end
-      
+      result = Classify.classify_transaction(t, sapling, sapling_hidden, sapling_revealed, sprout, sprout_hidden, sprout_revealed)
+      t.category = result[:category]
+      sapling = result[:sapling]
+      sapling_hidden = result[:sapling_hidden]
+      sapling_revealed = result[:sapling_revealed]
+      sprout = result[:sprout]
+      sprout_hidden = result[:sprout_hidden]
+      sprout_revealed = result[:sprout_revealed]
+      binding.pry if t.category.nil?
+
       latest_transactions << t
       if (latest_transactions.length % 1000).zero?
         print "Adding transaction #{latest_transactions.length} to latest_transactions.\n"
@@ -78,14 +91,17 @@ latest_transactions = []
     end
     if (latest_transactions.length % 4000).zero?
       print "Importing transactions at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}.\n"
-      Transaction.import latest_transactions
-      print "Finished importing transactions. At block #{i} of #{final_block} (#{((i.to_f / final_block) * 100).round(2)}%) at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}. Imported #{latest_transactions.length} transactions.\n"
+      #Transaction.import latest_transactions
+      #print "Finished importing transactions. At block #{i} of #{final_block} (#{((i.to_f / final_block) * 100).round(2)}%) at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}. Imported #{latest_transactions.length} transactions.\n"
+      print "TEST RUN, not importing to DB.\n"
       latest_transactions = []
     end
   end
 end
 # Save final group of transacations in the array
 print "Importing blocks at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}.\n"
-Transaction.import latest_transactions
+#Transaction.import latest_transactions
+print "TEST RUN, not importing to DB.\n"
+binding.pry
 #print "Finished block #{i} of #{final_block} (#{((i.to_f / final_block) * 100).round(2)}%) at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}. Imported #{latest_transactions.length} transactions.\n"
 latest_transactions = []
