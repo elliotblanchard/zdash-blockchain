@@ -54,12 +54,14 @@ module Classify
                 # sprout_hidden += tx.sum_vpubold
                 # sprout_revealed += tx.sum_vpubnew
                 # sprout_balance = (sprout_hidden - sprout_revealed) / 100000000
+                print("Before add sprout_hidden is: #{sprout_hidden}, and sprout_revealed is: #{sprout_revealed}\n")
                 fields = transaction.vjoinsplit.split(' ')
                 vpub_old = fields[0].split('=>')[1].gsub('"', '').gsub(',', '').to_f
                 vpub_new = fields[2].split('=>')[1].gsub('"', '').gsub(',', '').to_f
                 sprout += 1
                 sprout_hidden += vpub_old
                 sprout_revealed += vpub_new
+                print("After add sprout_hidden is: #{sprout_hidden}, and sprout_revealed is: #{sprout_revealed}\n")
                 { category: 'sprout_shielded', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed }
               end
             else
