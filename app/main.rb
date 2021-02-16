@@ -37,7 +37,7 @@ sprout_revealed = 0
 # Starting run to end at block 650000 (12/5/2019)
 
 #(0..final_block).each do |i|
-(0..10000).each do |i|
+(0..2000).each do |i|
   current_block = zc.getblock(i.to_s, 1)
   num_transactions = current_block['tx'].length - 1
   # Inner loop: get each transaction in this block
