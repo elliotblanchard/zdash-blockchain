@@ -7,6 +7,26 @@ module Classify
       # c13632d045a685dfead48b62ceb8d0adb188fef9e3f902c65112a88a4dbed4fe
       
       if transaction
+        # Shielded pool size detection
+        if transaction.vjoinsplit.length > 2
+          # vpubold + vpubnew seem to both be inside vjoinsplit
+          # Python classification is:
+          # sprout += 1
+          # sprout_hidden += tx.sum_vpubold
+          # sprout_revealed += tx.sum_vpubnew
+          # sprout_balance = (sprout_hidden - sprout_revealed) / 100000000
+          #print("Before add sprout_hidden is: #{sprout_hidden}, and sprout_revealed is: #{sprout_revealed}\n")
+          fields = transaction.vjoinsplit.split(' ')
+          vpub_old = fields[0].split('=>')[1].gsub('"', '').gsub(',', '').to_f
+          vpub_new = fields[2].split('=>')[1].gsub('"', '').gsub(',', '').to_f
+          #print("Transaction hash: #{transaction.zhash}, vpub_old: #{fields[0]}, vpub_new: #{fields[2]}\n")
+          sprout += 1
+          sprout_hidden += vpub_old
+          sprout_revealed += vpub_new
+          #print("After add sprout_hidden is: #{sprout_hidden}, and sprout_revealed is: #{sprout_revealed}\n")
+        end
+        
+        # Transaction classification
         if transaction.vin.length > 2
           parsed = transaction.vin.split(',')
           if ( (parsed[0].length > 18) && (parsed[0].include? 'coinbase'))
@@ -47,22 +67,6 @@ module Classify
               if ( transaction.vShieldedOutput && (transaction.vShieldedOutput.length > 2) )
                 {category: 'migration', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
               else
-                # Pool size detection goes here
-                # vpubold + vpubnew seem to both be inside vjoinsplit
-                # Python classification is:
-                # sprout += 1
-                # sprout_hidden += tx.sum_vpubold
-                # sprout_revealed += tx.sum_vpubnew
-                # sprout_balance = (sprout_hidden - sprout_revealed) / 100000000
-                #print("Before add sprout_hidden is: #{sprout_hidden}, and sprout_revealed is: #{sprout_revealed}\n")
-                fields = transaction.vjoinsplit.split(' ')
-                vpub_old = fields[0].split('=>')[1].gsub('"', '').gsub(',', '').to_f
-                vpub_new = fields[2].split('=>')[1].gsub('"', '').gsub(',', '').to_f
-                print("Transaction hash: #{transaction.zhash}, vpub_old: #{fields[0]}, vpub_new: #{fields[2]}\n")
-                sprout += 1
-                sprout_hidden += vpub_old
-                sprout_revealed += vpub_new
-                #print("After add sprout_hidden is: #{sprout_hidden}, and sprout_revealed is: #{sprout_revealed}\n")
                 { category: 'sprout_shielded', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed }
               end
             else
