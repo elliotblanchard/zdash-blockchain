@@ -43,31 +43,31 @@ module Classify
               else
                 if transaction.vjoinsplit.length > 2
                   print "transparent_coinbase has vjoinsplit.\n"
-                end                
+                end
                 {category: 'transparent_coinbase', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
               end
             else
               if transaction.vjoinsplit.length > 2
                 print "transparent_coinbase has vjoinsplit.\n"
-              end               
+              end
               {category: 'transparent_coinbase', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
             end
           else
             if transaction.vout.length > 2
-              if transaction.vjoinsplit.length > 2
-                print "transparent has vjoinsplit.\n"
-              end               
+              #if transaction.vjoinsplit.length > 2
+              #  print "transparent has vjoinsplit.\n"
+              #end
               {category: 'transparent', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
             else
               if transaction.vjoinsplit.length > 2
-                if transaction.vjoinsplit.length > 2
-                  print "sprout_shielding has vjoinsplit.\n"
-                end                 
+                #if transaction.vjoinsplit.length > 2
+                #  print "sprout_shielding has vjoinsplit.\n"
+                #end
                 {category: 'sprout_shielding', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
               else
                 if transaction.vjoinsplit.length > 2
                   print "sapling_shielding has vjoinsplit.\n"
-                end                  
+                end
                 {category: 'sapling_shielding', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
               end
             end
@@ -75,14 +75,14 @@ module Classify
         else
           if transaction.vout.length > 2
             if transaction.vjoinsplit.length > 2
-              if transaction.vjoinsplit.length > 2
-                print "sprout_deshielding has vjoinsplit.\n"
-              end                
+              #if transaction.vjoinsplit.length > 2
+              #  print "sprout_deshielding has vjoinsplit.\n"
+              #end
               {category: 'sprout_deshielding', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
             else
               if transaction.vjoinsplit.length > 2
                 print "sapling_deshielding has vjoinsplit.\n"
-              end                
+              end
               {category: 'sapling_deshielding', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
             end
           else
@@ -93,9 +93,9 @@ module Classify
                 end                 
                 {category: 'migration', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
               else
-                if transaction.vjoinsplit.length > 2
-                  print "sprout_shielded has vjoinsplit.\n"
-                end                   
+                #if transaction.vjoinsplit.length > 2
+                #  print "sprout_shielded has vjoinsplit.\n"
+                #end
                 { category: 'sprout_shielded', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed }
               end
             else

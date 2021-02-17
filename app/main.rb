@@ -28,7 +28,15 @@ latest_transactions = []
 # Shielded pool counters
 sapling = 0
 sapling_hidden = 0
+sapling_shielding_hidden = 0
+sapling_deshielding_hidden = 0
+sapling_shielded_hidden = 0
+transparent_hidden = 0
 sapling_revealed = 0
+sapling_shielding_revealed = 0
+sapling_deshielding_revealed = 0
+sapling_shielded_revealed = 0
+transparent_revealed = 0
 sprout = 0
 sprout_hidden = 0
 sprout_revealed = 0
@@ -36,8 +44,12 @@ sprout_revealed = 0
 # Main loop: get each block in Zcash blockchain
 # Starting run to end at block 650000 (12/5/2019)
 
+# Running ALL vjoinsplit containing transactions give 95,871 for the pool size,
+# Which is about twice what this would show for 4/2017: 
+# https://aws1.discourse-cdn.com/zcash/original/3X/5/8/58509d75f84b9e1c6da53101c3ad113925b1994b.png
+
 #(0..final_block).each do |i|
-(0..50000).each do |i|
+(0..100000).each do |i| # Thursday, April 20, 2017 5:38:14 AM
   current_block = zc.getblock(i.to_s, 1)
   num_transactions = current_block['tx'].length - 1
   # Inner loop: get each transaction in this block
@@ -70,20 +82,45 @@ sprout_revealed = 0
         overwintered: current_transaction['overwintered']
       )
 
-      result = Classify.classify_transaction(t, sapling, sapling_hidden, sapling_revealed, sprout, sprout_hidden, sprout_revealed)
+      result = Classify.classify_transaction(
+        t, 
+        sapling,
+        sapling_hidden,
+        sapling_shielding_hidden,
+        sapling_deshielding_hidden,
+        sapling_shielded_hidden,
+        transparent_hidden,
+        sapling_revealed,
+        sapling_shielding_revealed,
+        sapling_deshielding_revealed,
+        sapling_shielded_revealed,
+        transparent_revealed,
+        sprout,
+        sprout_hidden,
+        sprout_revealed
+      )
       t.category = result[:category]
       sapling = result[:sapling]
       sapling_hidden = result[:sapling_hidden]
+      sapling_shielding_hidden = result[:sapling_shielding_hidden]
+      sapling_deshielding_hidden = result[:sapling_deshielding_hidden]
+      sapling_shielded_hidden = result[:sapling_shielded_hidden]
+      transparent_hidden = result[:transparent_hidden]
       sapling_revealed = result[:sapling_revealed]
+      sapling_shielding_revealed = 0
+      sapling_deshielding_revealed = 0
+      sapling_shielded_revealed = 0
+      transparent_revealed = 0
       sprout = result[:sprout]
       sprout_hidden = result[:sprout_hidden]
       sprout_revealed = result[:sprout_revealed]
+
       binding.pry if t.category.nil?
 
       latest_transactions << t
-      if (latest_transactions.length % 1000).zero?
-        print "Adding transaction #{latest_transactions.length} to latest_transactions.\n"
-      end
+      #if (latest_transactions.length % 1000).zero?
+      #  print "Adding transaction #{latest_transactions.length} to latest_transactions.\n"
+      #end
 
     rescue => e
       binding.pry
