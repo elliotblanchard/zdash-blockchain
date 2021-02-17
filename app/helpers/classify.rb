@@ -36,21 +36,38 @@ module Classify
             # and zcha.in API (ongoing) report vShieldedOutput
             if transaction.vShieldedOutput
               if transaction.vShieldedOutput.length > 2
-                print("Shielded coinbase: #{transaction.zhash}")
+                if transaction.vjoinsplit.length > 2
+                  print "shielded_coinbase has vjoinsplit.\n"
+                end
                 {category: 'shielded_coinbase', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
               else
+                if transaction.vjoinsplit.length > 2
+                  print "transparent_coinbase has vjoinsplit.\n"
+                end                
                 {category: 'transparent_coinbase', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
               end
             else
+              if transaction.vjoinsplit.length > 2
+                print "transparent_coinbase has vjoinsplit.\n"
+              end               
               {category: 'transparent_coinbase', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
             end
           else
             if transaction.vout.length > 2
+              if transaction.vjoinsplit.length > 2
+                print "transparent has vjoinsplit.\n"
+              end               
               {category: 'transparent', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
             else
               if transaction.vjoinsplit.length > 2
+                if transaction.vjoinsplit.length > 2
+                  print "sprout_shielding has vjoinsplit.\n"
+                end                 
                 {category: 'sprout_shielding', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
               else
+                if transaction.vjoinsplit.length > 2
+                  print "sapling_shielding has vjoinsplit.\n"
+                end                  
                 {category: 'sapling_shielding', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
               end
             end
@@ -58,15 +75,27 @@ module Classify
         else
           if transaction.vout.length > 2
             if transaction.vjoinsplit.length > 2
+              if transaction.vjoinsplit.length > 2
+                print "sprout_deshielding has vjoinsplit.\n"
+              end                
               {category: 'sprout_deshielding', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
             else
+              if transaction.vjoinsplit.length > 2
+                print "sapling_deshielding has vjoinsplit.\n"
+              end                
               {category: 'sapling_deshielding', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
             end
           else
             if transaction.vjoinsplit.length > 2
               if ( transaction.vShieldedOutput && (transaction.vShieldedOutput.length > 2) )
+                if transaction.vjoinsplit.length > 2
+                  print "migration has vjoinsplit.\n"
+                end                 
                 {category: 'migration', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
               else
+                if transaction.vjoinsplit.length > 2
+                  print "sprout_shielded has vjoinsplit.\n"
+                end                   
                 { category: 'sprout_shielded', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed }
               end
             else
@@ -84,6 +113,9 @@ module Classify
               else
                 sapling_revealed += transaction.valueBalance.to_f
               end
+              if transaction.vjoinsplit.length > 2
+                print "sapling_shielded has vjoinsplit.\n"
+              end               
               { category: 'sapling_shielded', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed } 
             end
           end
