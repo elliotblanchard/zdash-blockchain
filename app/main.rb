@@ -37,7 +37,7 @@ sprout_revealed = 0
 # Starting run to end at block 650000 (12/5/2019)
 
 #(0..final_block).each do |i|
-(0..500000).each do |i|
+(0..250000).each do |i|
   current_block = zc.getblock(i.to_s, 1)
   num_transactions = current_block['tx'].length - 1
   # Inner loop: get each transaction in this block
@@ -90,7 +90,7 @@ sprout_revealed = 0
       print "ERROR: #{e}.\n".colorize(:red)
     end
     if (latest_transactions.length % 4000).zero?
-      print "Importing transactions at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}.\n"
+      print "At block: #{i} Importing transactions at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}.\n"
       #Transaction.import latest_transactions
       #print "Finished importing transactions. At block #{i} of #{final_block} (#{((i.to_f / final_block) * 100).round(2)}%) at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}. Imported #{latest_transactions.length} transactions.\n"
       print "TEST RUN, not importing to DB.\n"
