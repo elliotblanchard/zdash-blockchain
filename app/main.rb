@@ -28,14 +28,14 @@ latest_transactions = []
 # Shielded pool counters
 sapling = 0
 sapling_hidden = 0
-sapling_shielding_hidden = 0
-sapling_deshielding_hidden = 0
-sapling_shielded_hidden = 0
+sprout_shielding_hidden = 0
+sprout_deshielding_hidden = 0
+sprout_shielded_hidden = 0
 transparent_hidden = 0
 sapling_revealed = 0
-sapling_shielding_revealed = 0
-sapling_deshielding_revealed = 0
-sapling_shielded_revealed = 0
+sprout_shielding_revealed = 0
+sprout_deshielding_revealed = 0
+sprout_shielded_revealed = 0
 transparent_revealed = 0
 sprout = 0
 sprout_hidden = 0
@@ -83,37 +83,37 @@ sprout_revealed = 0
       )
 
       result = Classify.classify_transaction(
-        t, 
+        t,
         sapling,
         sapling_hidden,
-        sapling_shielding_hidden,
-        sapling_deshielding_hidden,
-        sapling_shielded_hidden,
         transparent_hidden,
         sapling_revealed,
-        sapling_shielding_revealed,
-        sapling_deshielding_revealed,
-        sapling_shielded_revealed,
         transparent_revealed,
         sprout,
         sprout_hidden,
-        sprout_revealed
+        sprout_shielding_hidden,
+        sprout_deshielding_hidden,
+        sprout_shielded_hidden,
+        sprout_revealed,
+        sprout_shielding_revealed,
+        sprout_deshielding_revealed,
+        sprout_shielded_revealed
       )
       t.category = result[:category]
       sapling = result[:sapling]
       sapling_hidden = result[:sapling_hidden]
-      sapling_shielding_hidden = result[:sapling_shielding_hidden]
-      sapling_deshielding_hidden = result[:sapling_deshielding_hidden]
-      sapling_shielded_hidden = result[:sapling_shielded_hidden]
       transparent_hidden = result[:transparent_hidden]
       sapling_revealed = result[:sapling_revealed]
-      sapling_shielding_revealed = 0
-      sapling_deshielding_revealed = 0
-      sapling_shielded_revealed = 0
-      transparent_revealed = 0
+      transparent_revealed = result[:transparent_revealed]
       sprout = result[:sprout]
       sprout_hidden = result[:sprout_hidden]
+      sprout_shielding_hidden = result[:sprout_shielding_hidden]
+      sprout_deshielding_hidden = result[:sprout_deshielding_hidden]
+      sprout_shielded_hidden = result[:sprout_shielded_hidden]        
       sprout_revealed = result[:sprout_revealed]
+      sprout_shielding_revealed = result[:sprout_shielding_revealed]
+      sprout_deshielding_revealed = result[:sprout_deshielding_revealed]
+      sprout_shielded_revealed = result[:sprout_shielded_revealed] 
 
       binding.pry if t.category.nil?
 

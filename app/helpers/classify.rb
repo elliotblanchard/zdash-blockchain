@@ -1,5 +1,21 @@
 module Classify
-    def Classify.classify_transaction(transaction, sapling, sapling_hidden, sapling_revealed, sprout, sprout_hidden, sprout_revealed)
+    def Classify.classify_transaction(
+      transaction,
+      sapling,
+      sapling_hidden,
+      transparent_hidden,
+      sapling_revealed,
+      transparent_revealed,
+      sprout,
+      sprout_hidden,
+      sprout_shielding_hidden,
+      sprout_deshielding_hidden,
+      sprout_shielded_hidden,
+      sprout_revealed,
+      sprout_shielding_revealed,
+      sprout_deshielding_revealed,
+      sprout_shielded_revealed
+      )
       # Some example transaction hashes:
       # d456a889ddc87ad41e379de5bb245781333fd883b67bf34eebabd1a6fb7e144a
       # d2ebc0cfd864027eb0887e1dcb772b4d1ca7bc016504889a6843583c2ca73bb4
@@ -15,15 +31,12 @@ module Classify
           # sprout_hidden += tx.sum_vpubold
           # sprout_revealed += tx.sum_vpubnew
           # sprout_balance = (sprout_hidden - sprout_revealed) / 100000000
-          #print("Before add sprout_hidden is: #{sprout_hidden}, and sprout_revealed is: #{sprout_revealed}\n")
           fields = transaction.vjoinsplit.split(' ')
           vpub_old = fields[0].split('=>')[1].gsub('"', '').gsub(',', '').to_f
           vpub_new = fields[2].split('=>')[1].gsub('"', '').gsub(',', '').to_f
-          #print("Transaction hash: #{transaction.zhash}, vpub_old: #{fields[0]}, vpub_new: #{fields[2]}\n")
           sprout += 1
           sprout_hidden += vpub_old
           sprout_revealed += vpub_new
-          #print("After add sprout_hidden is: #{sprout_hidden}, and sprout_revealed is: #{sprout_revealed}\n")
         end
         
         # Transaction classification
@@ -36,67 +49,229 @@ module Classify
             # and zcha.in API (ongoing) report vShieldedOutput
             if transaction.vShieldedOutput
               if transaction.vShieldedOutput.length > 2
-                if transaction.vjoinsplit.length > 2
-                  print "shielded_coinbase has vjoinsplit.\n"
-                end
-                {category: 'shielded_coinbase', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
+                #if transaction.vjoinsplit.length > 2
+                #  print "shielded_coinbase has vjoinsplit.\n"
+                #end
+                {
+                  category: 'shielded_coinbase',
+                  sapling: sapling,
+                  sapling_hidden: sapling_hidden,
+                  transparent_hidden: transparent_hidden,
+                  sapling_revealed: sapling_revealed,
+                  transparent_revealed: transparent_revealed,
+                  sprout: sprout,
+                  sprout_hidden: sprout_hidden,
+                  sprout_shielding_hidden: sprout_shielding_hidden,
+                  sprout_deshielding_hidden: sprout_deshielding_hidden,
+                  sprout_shielded_hidden: sprout_shielded_hidden,
+                  sprout_revealed: sprout_revealed,
+                  sprout_shielding_revealed: sprout_shielding_revealed,
+                  sprout_deshielding_revealed: sprout_deshielding_revealed,
+                  sprout_shielded_revealed: sprout_shielded_revealed
+                }
               else
-                if transaction.vjoinsplit.length > 2
-                  print "transparent_coinbase has vjoinsplit.\n"
-                end
-                {category: 'transparent_coinbase', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
+                #if transaction.vjoinsplit.length > 2
+                #  print "transparent_coinbase has vjoinsplit.\n"
+                #end
+                {
+                  category: 'transparent_coinbase',
+                  sapling: sapling,
+                  sapling_hidden: sapling_hidden,
+                  transparent_hidden: transparent_hidden,
+                  sapling_revealed: sapling_revealed,
+                  transparent_revealed: transparent_revealed,
+                  sprout: sprout,
+                  sprout_hidden: sprout_hidden,
+                  sprout_shielding_hidden: sprout_shielding_hidden,
+                  sprout_deshielding_hidden: sprout_deshielding_hidden,
+                  sprout_shielded_hidden: sprout_shielded_hidden,
+                  sprout_revealed: sprout_revealed,
+                  sprout_shielding_revealed: sprout_shielding_revealed,
+                  sprout_deshielding_revealed: sprout_deshielding_revealed,
+                  sprout_shielded_revealed: sprout_shielded_revealed
+                }
               end
             else
-              if transaction.vjoinsplit.length > 2
-                print "transparent_coinbase has vjoinsplit.\n"
-              end
-              {category: 'transparent_coinbase', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
+              #if transaction.vjoinsplit.length > 2
+              #  print "transparent_coinbase has vjoinsplit.\n"
+              #end
+              {
+                category: 'transparent_coinbase',
+                sapling: sapling,
+                sapling_hidden: sapling_hidden,
+                transparent_hidden: transparent_hidden,
+                sapling_revealed: sapling_revealed,
+                transparent_revealed: transparent_revealed,
+                sprout: sprout,
+                sprout_hidden: sprout_hidden,
+                sprout_shielding_hidden: sprout_shielding_hidden,
+                sprout_deshielding_hidden: sprout_deshielding_hidden,
+                sprout_shielded_hidden: sprout_shielded_hidden,
+                sprout_revealed: sprout_revealed,
+                sprout_shielding_revealed: sprout_shielding_revealed,
+                sprout_deshielding_revealed: sprout_deshielding_revealed,
+                sprout_shielded_revealed: sprout_shielded_revealed
+              }
             end
           else
             if transaction.vout.length > 2
-              #if transaction.vjoinsplit.length > 2
-              #  print "transparent has vjoinsplit.\n"
+              #if ( (vpub_old == nil) || (vpub_new == nil) ) 
+              #  binding.pry
               #end
-              {category: 'transparent', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
+              #transparent_hidden += vpub_old
+              #transparent_revealed += vpub_new
+              {
+                category: 'transparent',
+                sapling: sapling,
+                sapling_hidden: sapling_hidden,
+                transparent_hidden: transparent_hidden,
+                sapling_revealed: sapling_revealed,
+                transparent_revealed: transparent_revealed,
+                sprout: sprout,
+                sprout_hidden: sprout_hidden,
+                sprout_shielding_hidden: sprout_shielding_hidden,
+                sprout_deshielding_hidden: sprout_deshielding_hidden,
+                sprout_shielded_hidden: sprout_shielded_hidden,
+                sprout_revealed: sprout_revealed,
+                sprout_shielding_revealed: sprout_shielding_revealed,
+                sprout_deshielding_revealed: sprout_deshielding_revealed,
+                sprout_shielded_revealed: sprout_shielded_revealed
+              }
             else
               if transaction.vjoinsplit.length > 2
-                #if transaction.vjoinsplit.length > 2
-                #  print "sprout_shielding has vjoinsplit.\n"
-                #end
-                {category: 'sprout_shielding', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
-              else
-                if transaction.vjoinsplit.length > 2
-                  print "sapling_shielding has vjoinsplit.\n"
+                if ( (vpub_old == nil) || (vpub_new == nil) ) 
+                  binding.pry
                 end
-                {category: 'sapling_shielding', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
+                sprout_shielding_hidden += vpub_old
+                sprout_shielding_revealed += vpub_new
+                {
+                  category: 'sprout_shielding',
+                  sapling: sapling,
+                  sapling_hidden: sapling_hidden,
+                  transparent_hidden: transparent_hidden,
+                  sapling_revealed: sapling_revealed,
+                  transparent_revealed: transparent_revealed,
+                  sprout: sprout,
+                  sprout_hidden: sprout_hidden,
+                  sprout_shielding_hidden: sprout_shielding_hidden,
+                  sprout_deshielding_hidden: sprout_deshielding_hidden,
+                  sprout_shielded_hidden: sprout_shielded_hidden,
+                  sprout_revealed: sprout_revealed,
+                  sprout_shielding_revealed: sprout_shielding_revealed,
+                  sprout_deshielding_revealed: sprout_deshielding_revealed,
+                  sprout_shielded_revealed: sprout_shielded_revealed
+                }
+              else
+                {
+                  category: 'sapling_shielding', 
+                  sapling: sapling,
+                  sapling_hidden: sapling_hidden,
+                  transparent_hidden: transparent_hidden,
+                  sapling_revealed: sapling_revealed,
+                  transparent_revealed: transparent_revealed,
+                  sprout: sprout,
+                  sprout_hidden: sprout_hidden,
+                  sprout_shielding_hidden: sprout_shielding_hidden,
+                  sprout_deshielding_hidden: sprout_deshielding_hidden,
+                  sprout_shielded_hidden: sprout_shielded_hidden,
+                  sprout_revealed: sprout_revealed,
+                  sprout_shielding_revealed: sprout_shielding_revealed,
+                  sprout_deshielding_revealed: sprout_deshielding_revealed,
+                  sprout_shielded_revealed: sprout_shielded_revealed
+                }
               end
             end
           end
         else
           if transaction.vout.length > 2
             if transaction.vjoinsplit.length > 2
-              #if transaction.vjoinsplit.length > 2
-              #  print "sprout_deshielding has vjoinsplit.\n"
-              #end
-              {category: 'sprout_deshielding', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
-            else
-              if transaction.vjoinsplit.length > 2
-                print "sapling_deshielding has vjoinsplit.\n"
+              if ( (vpub_old == nil) || (vpub_new == nil) ) 
+                binding.pry
               end
-              {category: 'sapling_deshielding', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
+              sprout_deshielding_hidden += vpub_old
+              sprout_deshielding_revealed += vpub_new
+              {
+                category: 'sprout_deshielding', 
+                sapling: sapling,
+                sapling_hidden: sapling_hidden,
+                transparent_hidden: transparent_hidden,
+                sapling_revealed: sapling_revealed,
+                transparent_revealed: transparent_revealed,
+                sprout: sprout,
+                sprout_hidden: sprout_hidden,
+                sprout_shielding_hidden: sprout_shielding_hidden,
+                sprout_deshielding_hidden: sprout_deshielding_hidden,
+                sprout_shielded_hidden: sprout_shielded_hidden,
+                sprout_revealed: sprout_revealed,
+                sprout_shielding_revealed: sprout_shielding_revealed,
+                sprout_deshielding_revealed: sprout_deshielding_revealed,
+                sprout_shielded_revealed: sprout_shielded_revealed
+              }
+            else
+              {
+                category: 'sapling_deshielding', 
+                sapling: sapling,
+                sapling_hidden: sapling_hidden,
+                transparent_hidden: transparent_hidden,
+                sapling_revealed: sapling_revealed,
+                transparent_revealed: transparent_revealed,
+                sprout: sprout,
+                sprout_hidden: sprout_hidden,
+                sprout_shielding_hidden: sprout_shielding_hidden,
+                sprout_deshielding_hidden: sprout_deshielding_hidden,
+                sprout_shielded_hidden: sprout_shielded_hidden,
+                sprout_revealed: sprout_revealed,
+                sprout_shielding_revealed: sprout_shielding_revealed,
+                sprout_deshielding_revealed: sprout_deshielding_revealed,
+                sprout_shielded_revealed: sprout_shielded_revealed
+              }
             end
           else
             if transaction.vjoinsplit.length > 2
               if ( transaction.vShieldedOutput && (transaction.vShieldedOutput.length > 2) )
-                if transaction.vjoinsplit.length > 2
-                  print "migration has vjoinsplit.\n"
-                end                 
-                {category: 'migration', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
-              else
                 #if transaction.vjoinsplit.length > 2
-                #  print "sprout_shielded has vjoinsplit.\n"
+                #  print "migration has vjoinsplit.\n"
                 #end
-                { category: 'sprout_shielded', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed }
+                {
+                  category: 'migration', 
+                  sapling: sapling,
+                  sapling_hidden: sapling_hidden,
+                  transparent_hidden: transparent_hidden,
+                  sapling_revealed: sapling_revealed,
+                  transparent_revealed: transparent_revealed,
+                  sprout: sprout,
+                  sprout_hidden: sprout_hidden,
+                  sprout_shielding_hidden: sprout_shielding_hidden,
+                  sprout_deshielding_hidden: sprout_deshielding_hidden,
+                  sprout_shielded_hidden: sprout_shielded_hidden,
+                  sprout_revealed: sprout_revealed,
+                  sprout_shielding_revealed: sprout_shielding_revealed,
+                  sprout_deshielding_revealed: sprout_deshielding_revealed,
+                  sprout_shielded_revealed: sprout_shielded_revealed
+                }
+              else
+                if ( (vpub_old == nil) || (vpub_new == nil) ) 
+                  binding.pry
+                end               
+                sprout_shielded_hidden += vpub_old
+                sprout_shielded_revealed += vpub_new
+                { 
+                  category: 'sprout_shielded', 
+                  sapling: sapling,
+                  sapling_hidden: sapling_hidden,
+                  transparent_hidden: transparent_hidden,
+                  sapling_revealed: sapling_revealed,
+                  transparent_revealed: transparent_revealed,
+                  sprout: sprout,
+                  sprout_hidden: sprout_hidden,
+                  sprout_shielding_hidden: sprout_shielding_hidden,
+                  sprout_deshielding_hidden: sprout_deshielding_hidden,
+                  sprout_shielded_hidden: sprout_shielded_hidden,
+                  sprout_revealed: sprout_revealed,
+                  sprout_shielding_revealed: sprout_shielding_revealed,
+                  sprout_deshielding_revealed: sprout_deshielding_revealed,
+                  sprout_shielded_revealed: sprout_shielded_revealed
+                }
               end
             else
               # Pool size detection goes here
@@ -113,16 +288,48 @@ module Classify
               else
                 sapling_revealed += transaction.valueBalance.to_f
               end
-              if transaction.vjoinsplit.length > 2
-                print "sapling_shielded has vjoinsplit.\n"
-              end               
-              { category: 'sapling_shielded', sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed } 
+              #if transaction.vjoinsplit.length > 2
+              #  print "sapling_shielded has vjoinsplit.\n"
+              #end
+              { 
+                category: 'sapling_shielded', 
+                sapling: sapling,
+                sapling_hidden: sapling_hidden,
+                transparent_hidden: transparent_hidden,
+                sapling_revealed: sapling_revealed,
+                transparent_revealed: transparent_revealed,
+                sprout: sprout,
+                sprout_hidden: sprout_hidden,
+                sprout_shielding_hidden: sprout_shielding_hidden,
+                sprout_deshielding_hidden: sprout_deshielding_hidden,
+                sprout_shielded_hidden: sprout_shielded_hidden,
+                sprout_revealed: sprout_revealed,
+                sprout_shielding_revealed: sprout_shielding_revealed,
+                sprout_deshielding_revealed: sprout_deshielding_revealed,
+                sprout_shielded_revealed: sprout_shielded_revealed
+              }
             end
           end
         end
       else
         binding.pry
-        return {category: nil, sapling: sapling, sapling_hidden: sapling_hidden, sapling_revealed: sapling_revealed, sprout: sprout, sprout_hidden: sprout_hidden, sprout_revealed: sprout_revealed}
+        return {
+          category: nil, 
+          sapling: sapling,
+          sapling_hidden: sapling_hidden,
+          transparent_hidden: transparent_hidden,
+          sapling_revealed: sapling_revealed,
+          transparent_revealed: transparent_revealed,
+          sprout: sprout,
+          sprout_hidden: sprout_hidden,
+          sprout_shielding_hidden: sprout_shielding_hidden,
+          sprout_deshielding_hidden: sprout_deshielding_hidden,
+          sprout_shielded_hidden: sprout_shielded_hidden,
+          sprout_revealed: sprout_revealed,
+          sprout_shielding_revealed: sprout_shielding_revealed,
+          sprout_deshielding_revealed: sprout_deshielding_revealed,
+          sprout_shielded_revealed: sprout_shielded_revealed
+        }
       end
     end
   end
