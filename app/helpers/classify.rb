@@ -139,9 +139,9 @@ module Classify
               }
             else
               if transaction.vjoinsplit.length > 2
-                if ( (vpub_old == nil) || (vpub_new == nil) ) 
-                  binding.pry
-                end
+                #if ( (vpub_old == nil) || (vpub_new == nil) ) 
+                #  binding.pry
+                #end
                 sprout_shielding_hidden += vpub_old
                 sprout_shielding_revealed += vpub_new
                 {
@@ -162,6 +162,20 @@ module Classify
                   sprout_shielded_revealed: sprout_shielded_revealed
                 }
               else
+                # Pool size detection goes here
+                # Python classification is:
+                # sapling += 1
+                # if tx.value_balance < 0:
+                #  sapling_hidden += abs(tx.value_balance)
+                # else:
+                #  sapling_revealed += tx.value_balance
+                # sapling_balance = (sapling_hidden - sapling_revealed) / 100000000
+                sapling += 1
+                if transaction.valueBalance.negative?
+                  sapling_hidden += transaction.valueBalance.to_f.abs
+                else
+                  sapling_revealed += transaction.valueBalance.to_f
+                end                
                 {
                   category: 'sapling_shielding', 
                   sapling: sapling,
@@ -185,9 +199,9 @@ module Classify
         else
           if transaction.vout.length > 2
             if transaction.vjoinsplit.length > 2
-              if ( (vpub_old == nil) || (vpub_new == nil) ) 
-                binding.pry
-              end
+              #if ( (vpub_old == nil) || (vpub_new == nil) ) 
+              #  binding.pry
+              #end
               sprout_deshielding_hidden += vpub_old
               sprout_deshielding_revealed += vpub_new
               {
@@ -208,6 +222,20 @@ module Classify
                 sprout_shielded_revealed: sprout_shielded_revealed
               }
             else
+              # Pool size detection goes here
+              # Python classification is:
+              # sapling += 1
+              # if tx.value_balance < 0:
+              #  sapling_hidden += abs(tx.value_balance)
+              # else:
+              #  sapling_revealed += tx.value_balance
+              # sapling_balance = (sapling_hidden - sapling_revealed) / 100000000
+              sapling += 1
+              if transaction.valueBalance.negative?
+                sapling_hidden += transaction.valueBalance.to_f.abs
+              else
+                sapling_revealed += transaction.valueBalance.to_f
+              end
               {
                 category: 'sapling_deshielding', 
                 sapling: sapling,
@@ -250,9 +278,9 @@ module Classify
                   sprout_shielded_revealed: sprout_shielded_revealed
                 }
               else
-                if ( (vpub_old == nil) || (vpub_new == nil) ) 
-                  binding.pry
-                end               
+                #if ( (vpub_old == nil) || (vpub_new == nil) ) 
+                #  binding.pry
+                #end               
                 sprout_shielded_hidden += vpub_old
                 sprout_shielded_revealed += vpub_new
                 { 
@@ -274,25 +302,11 @@ module Classify
                 }
               end
             else
-              # Pool size detection goes here
-              # Python classification is:
-              # sapling += 1
-              # if tx.value_balance < 0:
-              #  sapling_hidden += abs(tx.value_balance)
-              # else:
-              #  sapling_revealed += tx.value_balance
-              # sapling_balance = (sapling_hidden - sapling_revealed) / 100000000
-              sapling += 1
-              if transaction.valueBalance.negative?
-                sapling_hidden += transaction.valueBalance.to_f.abs
-              else
-                sapling_revealed += transaction.valueBalance.to_f
-              end
               #if transaction.vjoinsplit.length > 2
               #  print "sapling_shielded has vjoinsplit.\n"
               #end
               { 
-                category: 'sapling_shielded', 
+                category: 'sapling_shielded',
                 sapling: sapling,
                 sapling_hidden: sapling_hidden,
                 transparent_hidden: transparent_hidden,
