@@ -49,8 +49,7 @@ sprout_revealed = 0
 # https://aws1.discourse-cdn.com/zcash/original/3X/5/8/58509d75f84b9e1c6da53101c3ad113925b1994b.png
 
 #(0..final_block).each do |i|
-#(0..100000).each do |i| # Thursday, April 20, 2017 5:38:14 AM
-(375000..475000).each do |i| # Starting right before sapling - Sun 12 Aug 2018 20:18:33
+(0..1143000).each do |i| # This is to the last block currently in DB - after this, get the transactions + pool to the end
   current_block = zc.getblock(i.to_s, 1)
   num_transactions = current_block['tx'].length - 1
   # Inner loop: get each transaction in this block
