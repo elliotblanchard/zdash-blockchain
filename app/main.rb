@@ -7,6 +7,7 @@ require 'rpcjson'
 require 'net/http'
 require 'uri'
 require_relative './models/transaction'
+require_relative './models/pool'
 require_relative './helpers/classify'
 
 clear_line = "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b"
@@ -24,25 +25,19 @@ zc_network = zc.getinfo
 
 final_block = zc_network["blocks"] - 100 # 100 most recent blocks may not be finalized
 latest_transactions = []
+latest_pools = []
 
 # Shielded pool counters
 sapling = 0
 sapling_hidden = 0
-sprout_shielding_hidden = 0
-sprout_deshielding_hidden = 0
-sprout_shielded_hidden = 0
-transparent_hidden = 0
 sapling_revealed = 0
-sprout_shielding_revealed = 0
-sprout_deshielding_revealed = 0
-sprout_shielded_revealed = 0
-transparent_revealed = 0
+sapling_pool = 0
 sprout = 0
 sprout_hidden = 0
 sprout_revealed = 0
+sprout_pool = 0
 
 # Main loop: get each block in Zcash blockchain
-# Starting run to end at block 650000 (12/5/2019)
 
 # Running ALL vjoinsplit containing transactions give 95,871 for the pool size,
 # Which is about twice what this would show for 4/2017: 
@@ -86,34 +81,18 @@ sprout_revealed = 0
         t,
         sapling,
         sapling_hidden,
-        transparent_hidden,
         sapling_revealed,
-        transparent_revealed,
         sprout,
         sprout_hidden,
-        sprout_shielding_hidden,
-        sprout_deshielding_hidden,
-        sprout_shielded_hidden,
-        sprout_revealed,
-        sprout_shielding_revealed,
-        sprout_deshielding_revealed,
-        sprout_shielded_revealed
+        sprout_revealed
       )
       t.category = result[:category]
       sapling = result[:sapling]
       sapling_hidden = result[:sapling_hidden]
-      transparent_hidden = result[:transparent_hidden]
       sapling_revealed = result[:sapling_revealed]
-      transparent_revealed = result[:transparent_revealed]
       sprout = result[:sprout]
       sprout_hidden = result[:sprout_hidden]
-      sprout_shielding_hidden = result[:sprout_shielding_hidden]
-      sprout_deshielding_hidden = result[:sprout_deshielding_hidden]
-      sprout_shielded_hidden = result[:sprout_shielded_hidden]        
       sprout_revealed = result[:sprout_revealed]
-      sprout_shielding_revealed = result[:sprout_shielding_revealed]
-      sprout_deshielding_revealed = result[:sprout_deshielding_revealed]
-      sprout_shielded_revealed = result[:sprout_shielded_revealed] 
 
       binding.pry if t.category.nil?
 
@@ -134,6 +113,27 @@ sprout_revealed = 0
       latest_transactions = []
     end
   end
+  sprout_pool = sprout_hidden - sprout_revealed
+  sapling_pool = sapling_hidden - sapling_revealed
+  p = Pool.new(
+    blockHeight: i,
+    timestamp: latest_transactions.last.timestamp,
+    sprout: sprout,
+    sproutHidden: sprout_hidden,
+    sproutRevealed: sprout_revealed,
+    sproutPool: sprout_pool,
+    sapling: sapling,
+    saplingHidden: sapling_hidden,
+    saplingRevealed: sapling_revealed,
+    saplingPool: sapling_pool
+  )
+  latest_pools << p 
+  if latest_pools.length % 4000.zero?
+    print "At block: #{i} Importing pools. sprout pool: #{sproutPool} sapling pool: #{saplingPool}}.\n"
+    Pool.import latest_pools
+    latest_pools = []
+    binding.pry
+  end
 end
 # Save final group of transacations in the array
 print "Importing blocks at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}.\n"
@@ -142,3 +142,4 @@ print "TEST RUN, not importing to DB.\n"
 binding.pry
 #print "Finished block #{i} of #{final_block} (#{((i.to_f / final_block) * 100).round(2)}%) at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}. Imported #{latest_transactions.length} transactions.\n"
 latest_transactions = []
+latest_pools = []
