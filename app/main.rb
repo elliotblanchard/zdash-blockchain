@@ -115,9 +115,14 @@ sprout_pool = 0
   end
   sprout_pool = sprout_hidden - sprout_revealed
   sapling_pool = sapling_hidden - sapling_revealed
+  if latest_transactions.last
+    timestamp = latest_transactions.last.timestamp
+  else
+    timestamp = 0
+  end
   p = Pool.new(
     blockHeight: i,
-    timestamp: latest_transactions.last.timestamp,
+    timestamp: timestamp,
     sprout: sprout,
     sproutHidden: sprout_hidden,
     sproutRevealed: sprout_revealed,
@@ -127,12 +132,11 @@ sprout_pool = 0
     saplingRevealed: sapling_revealed,
     saplingPool: sapling_pool
   )
-  latest_pools << p 
-  if latest_pools.length % 4000.zero?
-    print "At block: #{i} Importing pools. sprout pool: #{sproutPool} sapling pool: #{saplingPool}}.\n"
+  latest_pools << p
+  if (latest_pools.length % 2000).zero?
+    print "At block: #{i} Importing pools. sprout pool: #{sprout_pool} sapling pool: #{sapling_pool}.\n"
     Pool.import latest_pools
     latest_pools = []
-    binding.pry
   end
 end
 # Save final group of transacations in the array
