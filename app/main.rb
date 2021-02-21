@@ -43,7 +43,9 @@ sprout_pool = 0
 # Which is about twice what this would show for 4/2017: 
 # https://aws1.discourse-cdn.com/zcash/original/3X/5/8/58509d75f84b9e1c6da53101c3ad113925b1994b.png
 
-#(0..final_block).each do |i|
+# current final count of sprout pool: 1,907,547
+
+#(1143001..final_block).each do |i|
 (0..1143000).each do |i| # This is to the last block currently in DB - after this, get the transactions + pool to the end
   current_block = zc.getblock(i.to_s, 1)
   num_transactions = current_block['tx'].length - 1
@@ -133,7 +135,7 @@ sprout_pool = 0
     saplingPool: sapling_pool
   )
   latest_pools << p
-  if (latest_pools.length % 2000).zero?
+  if (latest_pools.length % 4000).zero?
     print "At block: #{i} Importing pools. sprout pool: #{sprout_pool} sapling pool: #{sapling_pool}.\n"
     Pool.import latest_pools
     latest_pools = []

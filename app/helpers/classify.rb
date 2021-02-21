@@ -27,8 +27,8 @@ module Classify
           vpub_old = fields[0].split('=>')[1].gsub('"', '').gsub(',', '').to_f
           vpub_new = fields[2].split('=>')[1].gsub('"', '').gsub(',', '').to_f
           sprout += 1
-          sprout_hidden += vpub_old
-          sprout_revealed += vpub_new
+          #sprout_hidden += vpub_old
+          #sprout_revealed += vpub_new
         end
         
         # Transaction classification
