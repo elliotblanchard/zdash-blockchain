@@ -23,6 +23,7 @@ ActiveRecord::Base.establish_connection(db_configuration['development'])
 
 zc_network = zc.getinfo
 
+start_block = 1159776
 final_block = zc_network["blocks"] - 100 # 100 most recent blocks may not be finalized
 latest_transactions = []
 latest_pools = []
@@ -37,6 +38,19 @@ sprout_hidden = 0
 sprout_revealed = 0
 sprout_pool = 0
 
+if start_block > 0
+  max_timestamp = Pool.maximum('timestamp')
+  p = Pool.where("timestamp = #{max_timestamp}").first
+  sapling = p.sapling
+  sapling_hidden = p.saplingHidden
+  sapling_revealed = p.saplingRevealed
+  sapling_pool = p.saplingPool
+  sprout = p.sprout
+  sprout_hidden = p.sproutHidden
+  sprout_revealed = p.sproutRevealed
+  sprout_pool = p.sproutPool
+end
+
 # Main loop: get each block in Zcash blockchain
 
 # Running ALL vjoinsplit containing transactions give 95,871 for the pool size,
@@ -46,8 +60,10 @@ sprout_pool = 0
 # current final count of sprout pool: 1,907,547
 # final count of sprout pool after double counting fix: 733,216
 
-(1143001..final_block).each do |i|
-#(0..1143000).each do |i| # This is to the last block currently in DB - after this, get the transactions + pool to the end
+# If your run starts AFTER block 0, you need to first load the last sapling and sprout values so 
+# You can continue caluclating pool sizes correctly / where you left off
+ 
+(start_block..final_block).each do |i|
   current_block = zc.getblock(i.to_s, 1)
   num_transactions = current_block['tx'].length - 1
   # Inner loop: get each transaction in this block
