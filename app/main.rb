@@ -23,7 +23,7 @@ ActiveRecord::Base.establish_connection(db_configuration['development'])
 
 zc_network = zc.getinfo
 
-start_block = 1159776
+start_block = 0
 final_block = zc_network["blocks"] - 100 # 100 most recent blocks may not be finalized
 latest_transactions = []
 latest_pools = []
@@ -38,6 +38,7 @@ sprout_hidden = 0
 sprout_revealed = 0
 sprout_pool = 0
 
+# If run starts AFTER block 0, first load the last sapling and sprout values so calculations continue correctly
 if start_block > 0
   max_timestamp = Pool.maximum('timestamp')
   p = Pool.where("timestamp = #{max_timestamp}").first
@@ -60,9 +61,6 @@ end
 # current final count of sprout pool: 1,907,547
 # final count of sprout pool after double counting fix: 733,216
 
-# If your run starts AFTER block 0, you need to first load the last sapling and sprout values so 
-# You can continue caluclating pool sizes correctly / where you left off
- 
 (start_block..final_block).each do |i|
   current_block = zc.getblock(i.to_s, 1)
   num_transactions = current_block['tx'].length - 1
@@ -116,6 +114,9 @@ end
       binding.pry if t.category.nil?
 
       latest_transactions << t
+      #if ( (i > 435) && (i < 445) )
+      #  print "#{t.vjoinsplit}\n\n".colorize(:blue)
+      #end
       #if (latest_transactions.length % 1000).zero?
       #  print "Adding transaction #{latest_transactions.length} to latest_transactions.\n"
       #end
@@ -132,7 +133,7 @@ end
       latest_transactions = []
     end
   end
-  sprout_pool = sprout_hidden - sprout_revealed
+  sprout_pool = (sprout_hidden - sprout_revealed) / 100000000
   sapling_pool = sapling_hidden - sapling_revealed
   if latest_transactions.last
     timestamp = latest_transactions.last.timestamp
@@ -152,6 +153,7 @@ end
     saplingPool: sapling_pool
   )
   latest_pools << p
+  #print "At block: #{i} Sprout pool: #{sprout_pool} sapling pool: #{sapling_pool}.\n".colorize(:green)
   if (latest_pools.length % 4000).zero?
     print "At block: #{i} Importing pools. sprout pool: #{sprout_pool} sapling pool: #{sapling_pool}.\n"
     Pool.import latest_pools
@@ -162,7 +164,6 @@ end
 print "Importing blocks at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}.\n"
 Transaction.import latest_transactions
 #print "TEST RUN, not importing to DB.\n"
-binding.pry
 #print "Finished block #{i} of #{final_block} (#{((i.to_f / final_block) * 100).round(2)}%) at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}. Imported #{latest_transactions.length} transactions.\n"
 latest_transactions = []
 latest_pools = []

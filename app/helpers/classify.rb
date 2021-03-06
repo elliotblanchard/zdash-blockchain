@@ -22,11 +22,24 @@ module Classify
           # sprout += 1
           # sprout_hidden += tx.sum_vpubold
           # sprout_revealed += tx.sum_vpubnew
+
           # sprout_balance = (sprout_hidden - sprout_revealed) / 100000000
+
+          vpub_old = 0
+          vpub_new = 0
           fields = transaction.vjoinsplit.split(' ')
-          vpub_old = fields[0].split('=>')[1].gsub('"', '').gsub(',', '').to_f
-          vpub_new = fields[2].split('=>')[1].gsub('"', '').gsub(',', '').to_f
+          fields.each do |field| # UPDATE IN RAKE TASK
+            if field.include? 'vpub_oldZat'
+              vpub_old += field.split('=>')[1].gsub('"', '').gsub(',', '').to_f
+            elsif field.include? 'vpub_newZat'
+              vpub_new += field.split('=>')[1].gsub('"', '').gsub(',', '').to_f
+            end
+          end
+          # vpub_old = fields[0].split('=>')[1].gsub('"', '').gsub(',', '').to_f
+          # vpub_new = fields[2].split('=>')[1].gsub('"', '').gsub(',', '').to_f
           sprout += 1
+          #print("-->#{transaction.vjoinsplit}\n")
+          #print("-> Sprout ADD: #{vpub_old / 100000000} Sprout MINUS: #{vpub_new / 100000000} \n")
           #sprout_hidden += vpub_old
           #sprout_revealed += vpub_new
         end
