@@ -28,16 +28,18 @@ module Classify
           vpub_old = 0
           vpub_new = 0
           fields = transaction.vjoinsplit.split(' ')
-          fields.each do |field| # UPDATE IN RAKE TASK
+          fields.each do |field|
             if field.include? 'vpub_oldZat'
               vpub_old += field.split('=>')[1].gsub('"', '').gsub(',', '').to_f
             elsif field.include? 'vpub_newZat'
               vpub_new += field.split('=>')[1].gsub('"', '').gsub(',', '').to_f
             end
           end
+          sprout += 1
+          sprout_hidden += vpub_old
+          sprout_revealed += vpub_new
           # vpub_old = fields[0].split('=>')[1].gsub('"', '').gsub(',', '').to_f
           # vpub_new = fields[2].split('=>')[1].gsub('"', '').gsub(',', '').to_f
-          sprout += 1
           #print("-->#{transaction.vjoinsplit}\n")
           #print("-> Sprout ADD: #{vpub_old / 100000000} Sprout MINUS: #{vpub_new / 100000000} \n")
           #sprout_hidden += vpub_old
@@ -98,8 +100,8 @@ module Classify
               }
             else
               if transaction.vjoinsplit.length > 2
-                sprout_hidden += vpub_old
-                sprout_revealed += vpub_new
+                #sprout_hidden += vpub_old
+                #sprout_revealed += vpub_new
                 {
                   category: 'sprout_shielding',
                   sapling: sapling,
@@ -139,8 +141,8 @@ module Classify
         else
           if transaction.vout.length > 2
             if transaction.vjoinsplit.length > 2
-              sprout_hidden += vpub_old
-              sprout_revealed += vpub_new
+              #sprout_hidden += vpub_old
+              #sprout_revealed += vpub_new
               {
                 category: 'sprout_deshielding',
                 sapling: sapling,
@@ -188,8 +190,8 @@ module Classify
                   sprout_revealed: sprout_revealed
                 }
               else
-                sprout_hidden += vpub_old
-                sprout_revealed += vpub_new
+                #sprout_hidden += vpub_old
+                #sprout_revealed += vpub_new
                 {
                   category: 'sprout_shielded',
                   sapling: sapling,
