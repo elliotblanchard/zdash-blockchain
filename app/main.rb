@@ -127,9 +127,9 @@ end
     end
     if (latest_transactions.length % 4000).zero?
       print "At block: #{i} Importing transactions at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}.\n"
-      #Transaction.import latest_transactions
-      #print "Finished importing transactions. At block #{i} of #{final_block} (#{((i.to_f / final_block) * 100).round(2)}%) at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}. Imported #{latest_transactions.length} transactions.\n"
-      print "TEST RUN, not importing to DB.\n"
+      Transaction.import latest_transactions
+      print "Finished importing transactions. At block #{i} of #{final_block} (#{((i.to_f / final_block) * 100).round(2)}%) at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}. Imported #{latest_transactions.length} transactions.\n"
+      #print "TEST RUN, not importing to DB.\n"
       latest_transactions = []
     end
   end
@@ -143,27 +143,27 @@ end
   p = Pool.new(
     blockHeight: i,
     timestamp: timestamp,
-    sprout: sprout,
-    sproutHidden: sprout_hidden,
-    sproutRevealed: sprout_revealed,
+    sprout: 0,
+    sproutHidden: 0.0,
+    sproutRevealed: 0.0,
     sproutPool: current_block['valuePools'][0]['chainValue'],
-    sapling: sapling,
-    saplingHidden: sapling_hidden,
-    saplingRevealed: sapling_revealed,
+    sapling: 0,
+    saplingHidden: 0.0,
+    saplingRevealed: 0.0,
     saplingPool: current_block['valuePools'][1]['chainValue']
   )
   latest_pools << p
   #print "At block: #{i} Sprout pool: #{sprout_pool} sapling pool: #{sapling_pool}.\n".colorize(:green)
   if (latest_pools.length % 4000).zero?
     print "At block: #{i} Importing pools. sprout pool: #{sprout_pool} sapling pool: #{sapling_pool}.\n"
-    #Pool.import latest_pools
+    Pool.import latest_pools
     latest_pools = []
   end
 end
 # Save final group of transacations in the array
 print "Importing blocks at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}.\n"
-#Transaction.import latest_transactions
-print "TEST RUN, not importing to DB.\n"
-#print "Finished block #{i} of #{final_block} (#{((i.to_f / final_block) * 100).round(2)}%) at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}. Imported #{latest_transactions.length} transactions.\n"
+Transaction.import latest_transactions
+#print "TEST RUN, not importing to DB.\n"
+print "Finished block #{i} of #{final_block} (#{((i.to_f / final_block) * 100).round(2)}%) at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}. Imported #{latest_transactions.length} transactions.\n"
 latest_transactions = []
 latest_pools = []
