@@ -10,6 +10,8 @@ require_relative './models/transaction'
 require_relative './models/pool'
 require_relative './helpers/classify'
 
+# Last good timestamp: 1615174563
+
 clear_line = "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b"
 
 def db_configuration
@@ -23,43 +25,12 @@ ActiveRecord::Base.establish_connection(db_configuration['development'])
 
 zc_network = zc.getinfo
 
-start_block = 1172000
+start_block = 0
 final_block = zc_network["blocks"] - 100 # 100 most recent blocks may not be finalized
 latest_transactions = []
 latest_pools = []
 
-# Shielded pool counters
-sapling = 0
-sapling_hidden = 0
-sapling_revealed = 0
-sapling_pool = 0
-sprout = 0
-sprout_hidden = 0
-sprout_revealed = 0
-sprout_pool = 0
-
-# If run starts AFTER block 0, first load the last sapling and sprout values so calculations continue correctly
-if start_block > 0
-  max_timestamp = Pool.maximum('timestamp')
-  p = Pool.where("timestamp = #{max_timestamp}").first
-  sapling = p.sapling
-  sapling_hidden = p.saplingHidden
-  sapling_revealed = p.saplingRevealed
-  sapling_pool = p.saplingPool
-  sprout = p.sprout
-  sprout_hidden = p.sproutHidden
-  sprout_revealed = p.sproutRevealed
-  sprout_pool = p.sproutPool
-end
-
 # Main loop: get each block in Zcash blockchain
-
-# Running ALL vjoinsplit containing transactions give 95,871 for the pool size,
-# Which is about twice what this would show for 4/2017: 
-# https://aws1.discourse-cdn.com/zcash/original/3X/5/8/58509d75f84b9e1c6da53101c3ad113925b1994b.png
-
-# current final count of sprout pool: 1,907,547
-# final count of sprout pool after double counting fix: 733,216
 
 (start_block..final_block).each do |i|
   current_block = zc.getblock(i.to_s, 1)
@@ -94,32 +65,11 @@ end
         overwintered: current_transaction['overwintered']
       )
 
-      result = Classify.classify_transaction(
-        t,
-        sapling,
-        sapling_hidden,
-        sapling_revealed,
-        sprout,
-        sprout_hidden,
-        sprout_revealed
-      )
-      t.category = result[:category]
-      sapling = result[:sapling]
-      sapling_hidden = result[:sapling_hidden]
-      sapling_revealed = result[:sapling_revealed]
-      sprout = result[:sprout]
-      sprout_hidden = result[:sprout_hidden]
-      sprout_revealed = result[:sprout_revealed]
+      t.category = Classify.classify_transaction(t)
 
       binding.pry if t.category.nil?
 
       latest_transactions << t
-      #if ( (i > 435) && (i < 445) )
-      #  print "#{t.vjoinsplit}\n\n".colorize(:blue)
-      #end
-      #if (latest_transactions.length % 1000).zero?
-      #  print "Adding transaction #{latest_transactions.length} to latest_transactions.\n"
-      #end
 
     rescue => e
       binding.pry
@@ -133,8 +83,6 @@ end
       latest_transactions = []
     end
   end
-  sprout_pool = (sprout_hidden - sprout_revealed) / 100000000
-  sapling_pool = sapling_hidden - sapling_revealed
   if latest_transactions.last
     timestamp = latest_transactions.last.timestamp
   else
