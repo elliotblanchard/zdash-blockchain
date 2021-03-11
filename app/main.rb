@@ -23,7 +23,7 @@ ActiveRecord::Base.establish_connection(db_configuration['development'])
 
 zc_network = zc.getinfo
 
-start_block = 0
+start_block = 1172000
 final_block = zc_network["blocks"] - 100 # 100 most recent blocks may not be finalized
 latest_transactions = []
 latest_pools = []
@@ -155,7 +155,7 @@ end
   latest_pools << p
   #print "At block: #{i} Sprout pool: #{sprout_pool} sapling pool: #{sapling_pool}.\n".colorize(:green)
   if (latest_pools.length % 4000).zero?
-    print "At block: #{i} Importing pools. sprout pool: #{sprout_pool} sapling pool: #{sapling_pool}.\n"
+    print "At block: #{i} Importing pools. sprout pool: #{current_block['valuePools'][0]['chainValue']} sapling pool: #{current_block['valuePools'][1]['chainValue']}.\n"
     Pool.import latest_pools
     latest_pools = []
   end
@@ -164,6 +164,6 @@ end
 print "Importing blocks at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}.\n"
 Transaction.import latest_transactions
 #print "TEST RUN, not importing to DB.\n"
-print "Finished block #{i} of #{final_block} (#{((i.to_f / final_block) * 100).round(2)}%) at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}. Imported #{latest_transactions.length} transactions.\n"
+#print "Finished block #{i} of #{final_block} (#{((i.to_f / final_block) * 100).round(2)}%) at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}. Imported #{latest_transactions.length} transactions.\n"
 latest_transactions = []
 latest_pools = []
