@@ -10,7 +10,7 @@ require_relative './models/transaction'
 require_relative './models/pool'
 require_relative './helpers/classify'
 
-# Last good timestamp: 1615174563
+# Last good timestamp / blockheight: 1615174563 / 1171999
 
 clear_line = "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b"
 
@@ -23,9 +23,10 @@ end
 zc = RPC::JSON::Client.new 'http://samwellhouston:silversandyblocks@192.168.1.158:8232', 1.1
 ActiveRecord::Base.establish_connection(db_configuration['development'])
 
-zc_network = zc.getinfo
 
-start_block = 0
+zc_network = zc.getinfo
+              
+start_block = 1172000
 final_block = zc_network["blocks"] - 100 # 100 most recent blocks may not be finalized
 latest_transactions = []
 latest_pools = []
@@ -108,9 +109,10 @@ latest_pools = []
     latest_pools = []
   end
 end
-# Save final group of transacations in the array
+# Save final group of transacations / pools in the array
 print "Importing blocks at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}.\n"
 Transaction.import latest_transactions
+Pool.import latest_pools
 #print "TEST RUN, not importing to DB.\n"
 #print "Finished block #{i} of #{final_block} (#{((i.to_f / final_block) * 100).round(2)}%) at #{DateTime.now.strftime('%I:%M%p %a %m/%d/%y')}. Imported #{latest_transactions.length} transactions.\n"
 latest_transactions = []
